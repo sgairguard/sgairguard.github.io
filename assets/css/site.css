@@ -169,6 +169,8 @@ a:hover { color: var(--primary-hover); }
 .seg-large { font-size: 1.2rem; }
 
 @media (max-width: 700px) {
+  .desktop-only { display: none; }
+  h1 { font-size: 1.45rem; }
   .topbar-inner { flex-wrap: nowrap; }
   .settings { display: none; }
   .icon-btn { display: inline-flex; }
@@ -195,6 +197,14 @@ main:focus { outline: none; }
 .col { min-width: 0; display: flex; flex-direction: column; gap: 1.25rem; }
 @media (min-width: 960px) {
   .top { grid-template-columns: minmax(0, 440px) minmax(0, 1fr); }
+}
+/* One column: Islandwide, map, regions, next-hour advice (the columns dissolve into the grid). */
+@media (max-width: 959px) {
+  .col { display: contents; }
+  #island { order: 1; }
+  #map { order: 2; }
+  #regions-card { order: 3; }
+  #advice { order: 4; }
 }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem; }
 
@@ -345,7 +355,6 @@ main:focus { outline: none; }
 .links a { display: inline-flex; align-items: center; min-height: 48px; }
 
 @media (max-width: 520px) {
-  h1 { font-size: 1.7rem; }
   .card { padding: 1rem; }
   /* Let the map use the card's padding so the West, Central and East callouts fit side by side. */
   .map-figure { width: auto; margin-inline: calc(-1rem + 4px); }

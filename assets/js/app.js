@@ -502,7 +502,8 @@ function render() {
     updated.textContent = state.error ? '' : s.loading;
   } else {
     const time = s.time(sgtParts(view.readingT));
-    updated.textContent = view.late ? s.lastReading(time, s.clock(sgtParts(now))) : s.updated(time);
+    if (view.late) updated.textContent = s.lastReading(time, s.clock(sgtParts(now)));
+    else updated.replaceChildren(s.updated(time), el('span', { class: 'desktop-only', text: s.updatedMore }));
   }
   renderIsland(s, view);
   renderAdvice(s, view);
