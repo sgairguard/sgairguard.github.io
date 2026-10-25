@@ -128,8 +128,7 @@ a:hover { color: var(--primary-hover); }
 .topbar { background: var(--surface); border-bottom: 1px solid var(--line); }
 .topbar-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); font-size: 1.2rem; font-weight: 700; }
-.brand-tile { fill: var(--primary); }
-.brand-wave { fill: none; stroke: var(--on-primary); stroke-width: 2.4; stroke-linecap: round; }
+.brand img { display: block; border-radius: 10px; }
 .settings { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill {
   min-height: 48px; min-width: 56px; padding: 0 1rem;
@@ -175,6 +174,8 @@ main:focus { outline: none; }
 .tone-stale.reading { border-style: dashed; }
 .reading-main { display: flex; flex-direction: column; gap: 0.25rem; }
 .reading-label { font-size: 0.9rem; font-weight: 600; }
+.reading-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; }
+.reading-head .reading-band { font-size: 0.9rem; margin-left: auto; }
 .reading-value { display: flex; align-items: baseline; gap: 6px; }
 .reading-value .num { font-size: 3.1rem; font-weight: 700; line-height: 1; }
 .reading-band { display: flex; align-items: center; gap: 6px; font-weight: 700; }

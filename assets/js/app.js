@@ -246,16 +246,16 @@ function renderIsland(s, view) {
   byId('island').setAttribute('aria-busy', String(!view));
   if (!view) return;
   const { pm25, psi, late } = view;
+  const band = pm25 === null ? null : pm25Band(pm25);
   const pmBlock = el('div', { class: `reading reading-main ${pm25Tone(pm25, late)}` }, [
-    el('span', { class: 'reading-label', text: late ? `${s.pm25Label} · ${s.atTime(s.clock(sgtParts(view.readingT)))}` : s.pm25Label }),
+    el('div', { class: 'reading-head' }, [
+      el('span', { class: 'reading-label', text: late ? `${s.pm25Label} · ${s.atTime(s.clock(sgtParts(view.readingT)))}` : s.pm25Label }),
+      el('span', { class: 'reading-band' }, band === null ? [s.noReading] : [late ? null : icon(BAND_ICONS[band]), s.band[band]]),
+    ]),
   ]);
-  if (pm25 === null) {
-    pmBlock.append(el('span', { class: 'reading-band', text: s.noReading }));
-  } else {
-    const band = pm25Band(pm25);
+  if (pm25 !== null) {
     pmBlock.append(
       el('span', { class: 'reading-value' }, [el('span', { class: 'num', text: fmt(pm25) }), el('span', { text: s.unit })]),
-      el('span', { class: 'reading-band' }, [late ? null : icon(BAND_ICONS[band]), s.band[band]]),
       pm25Bar(pm25),
     );
   }
