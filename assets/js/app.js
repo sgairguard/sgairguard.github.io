@@ -282,7 +282,11 @@ function renderIsland(s, view) {
   const band = pm25 === null ? null : pm25Band(pm25);
   const pmBlock = el('div', { class: `reading reading-main ${pm25Tone(pm25, late)}` }, [
     el('div', { class: 'reading-head' }, [
-      el('span', { class: 'reading-label', text: late ? `${s.pm25Label} · ${s.atTime(s.clock(sgtParts(view.readingT)))}` : s.pm25Label }),
+      el('span', { class: 'reading-label' }, [
+        s.pm25Label,
+        el('span', { class: 'desktop-only', text: s.pm25LabelSuffix }), // phones: band fits on the same line
+        late ? ` · ${s.atTime(s.clock(sgtParts(view.readingT)))}` : null,
+      ]),
       el('span', { class: 'reading-band' }, band === null ? [s.noReading] : [late ? null : icon(BAND_ICONS[band]), s.band[band]]),
     ]),
   ]);

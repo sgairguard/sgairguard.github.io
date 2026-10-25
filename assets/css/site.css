@@ -170,6 +170,16 @@ a:hover { color: var(--primary-hover); }
 
 @media (max-width: 700px) {
   .desktop-only { display: none; }
+  /* Islandwide: no card around the two readings, smaller numbers, PSI kept on one line. */
+  #island { background: none; border: 0; padding: 0; }
+  #island .reading { padding: 0.8rem 0.9rem; }
+  #island .reading-value .num { font-size: 2.45rem; }
+  #island .reading-row { padding-block: 0.55rem; }
+  #island .reading-row .value { flex-wrap: nowrap; white-space: nowrap; }
+  #island .reading-row { column-gap: 8px; }
+  #island .reading-row .reading-label { font-size: 0.8rem; }
+  #island .reading-row .value { font-size: 0.9rem; column-gap: 6px; }
+  #island .reading-row .num { font-size: 1.45rem; }
   h1 { font-size: 1.45rem; }
   .topbar-inner { flex-wrap: nowrap; }
   .settings { display: none; }
