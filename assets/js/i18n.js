@@ -67,7 +67,6 @@ export const STRINGS = {
     mapRegionSummary: (region, band) => `${region}: ${band}.`,
     regionsHeading: 'Regions',
     region: { north: 'North', west: 'West', central: 'Central', east: 'East', south: 'South' },
-    regionShort: { north: 'N', west: 'W', central: 'C', east: 'E', south: 'S' },
     towns: {
       north: 'Woodlands · Yishun',
       west: 'Jurong · CCK · Tuas',
@@ -167,7 +166,6 @@ export const STRINGS = {
     mapRegionSummary: (region, band) => `${region}：${band}。`,
     regionsHeading: '区域',
     region: { north: '北部', west: '西部', central: '中部', east: '东部', south: '南部' },
-    regionShort: { north: '北部', west: '西部', central: '中部', east: '东部', south: '南部' },
     towns: {
       north: '兀兰 · 义顺',
       west: '裕廊 · 蔡厝港 · 大士',

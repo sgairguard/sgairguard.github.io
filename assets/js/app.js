@@ -313,6 +313,30 @@ function hatchPattern(region, band) {
   ]);
 }
 
+// Callout geometry from the app's calculateBadgeOffset: centred on the region, kept 4px inside the map.
+const BADGE_HALF_WIDTH = 46;
+const BADGE_HALF_HEIGHT = 26;
+const BADGE_EDGE_MARGIN = 4;
+const BADGE_CLAMP_WIDTH = 90;
+const BADGE_MIN_HEIGHT = 52;
+
+function mapBadge(s, region, pm25, psi, tone) {
+  const [x, y] = BADGE_POSITIONS[region];
+  const band = pm25 === null ? null : pm25Band(pm25);
+  const badge = el('span', { class: `map-badge ${tone}` }, [
+    el('span', { class: 'mb-name' }, [band === null ? null : icon(BAND_ICONS[band], 12), s.region[region]]),
+    el('span', { class: 'mb-pm' }, [
+      el('span', { class: 'mb-pm-label', text: 'PM2.5 ' }),
+      el('span', { class: 'mb-pm-value', text: pm25 === null ? '--' : fmt(pm25) }),
+    ]),
+    el('span', { class: 'mb-psi', text: `PSI ${psi === null ? '--' : fmt(psi)}` }),
+  ]);
+  const m = BADGE_EDGE_MARGIN;
+  badge.style.setProperty('left', `clamp(${m}px, calc(${x * 100}% - ${BADGE_HALF_WIDTH}px), calc(100% - ${BADGE_CLAMP_WIDTH + m}px))`);
+  badge.style.setProperty('top', `clamp(${m}px, calc(${y * 100}% - ${BADGE_HALF_HEIGHT}px), calc(100% - ${BADGE_MIN_HEIGHT + m}px))`);
+  return badge;
+}
+
 function renderMap(s, view) {
   const figure = byId('map-figure');
   figure.replaceChildren();
@@ -333,11 +357,7 @@ function renderMap(s, view) {
         fills.append(svg('path', { d: REGION_CLIPS[region], fill: `url(#hatch-${region})` }));
       }
     }
-    const [x, y] = BADGE_POSITIONS[region];
-    const badge = el('span', { class: `map-badge ${tone}`, text: `${s.regionShort[region]} ${value === null ? '–' : fmt(value)}` });
-    badge.style.setProperty('left', `${x * 100}%`);
-    badge.style.setProperty('top', `${y * 100}%`);
-    badges.append(badge);
+    badges.append(mapBadge(s, region, value, view.psiRegions[region], tone));
   }
   fills.append(svg('path', { d: DIVIDERS, class: 'map-dividers' }));
   const label = view.late ? s.mapLateLabel : s.mapLabel(summary.join(' '));
