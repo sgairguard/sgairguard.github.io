@@ -33,7 +33,32 @@
       <button type="button" class="pill" id="text-toggle" aria-pressed="false" data-i18n="textLarger">Larger text</button>
       <a class="pill pill-primary" href="#get-app" data-i18n="getApp">Get the app</a>
     </nav>
+    <button type="button" class="icon-btn settings-toggle" id="settings-toggle" aria-expanded="false" aria-controls="settings-panel" aria-label="Settings">
+      <svg class="icon-gear" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>
+      <svg class="icon-close" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
   </div>
+  <div class="settings-backdrop" id="settings-backdrop" hidden></div>
+  <section class="settings-panel" id="settings-panel" aria-labelledby="h-settings" hidden>
+    <div class="wrap stack">
+      <h2 id="h-settings" data-i18n="settingsHeading">Settings</h2>
+      <div class="stack-sm">
+        <p class="label" id="lbl-lang" data-i18n="languageLabel">Language · 语言</p>
+        <div class="seg" role="group" aria-labelledby="lbl-lang">
+          <button type="button" class="seg-opt" data-lang="en" lang="en" aria-pressed="true">English</button>
+          <button type="button" class="seg-opt" data-lang="zh" lang="zh-Hans" aria-pressed="false">中文</button>
+        </div>
+      </div>
+      <div class="stack-sm">
+        <p class="label" id="lbl-text" data-i18n="textSizeLabel">Text size</p>
+        <div class="seg" role="group" aria-labelledby="lbl-text">
+          <button type="button" class="seg-opt" data-text="standard" aria-pressed="true" data-i18n="textStandardOption">Standard</button>
+          <button type="button" class="seg-opt seg-large" data-text="large" aria-pressed="false" data-i18n="textLargerOption">Larger</button>
+        </div>
+      </div>
+      <p class="muted small" data-i18n="settingsSaved">Saved in this browser only.</p>
+    </div>
+  </section>
 </header>
 
 <main id="main" class="wrap stack-lg" tabindex="-1">
@@ -44,11 +69,30 @@
     <p id="updated" class="muted" data-i18n="loading">Loading NEA readings…</p>
   </section>
 
+  <!-- Desktop: two columns (left: islandwide + regions; right: map + next-hour advice). Phone: one column in this order. -->
   <div class="top">
-    <div class="top-left">
+    <div class="col">
       <section class="card stack" aria-labelledby="h-island" aria-busy="true" id="island">
         <h2 id="h-island" data-i18n="islandwide">Islandwide</h2>
         <div id="island-body" class="stack-sm"></div>
+      </section>
+
+      <section class="card stack grow" aria-labelledby="h-regions" id="regions-card">
+        <h2 id="h-regions" data-i18n="regionsHeading">Regions</h2>
+        <table class="regions">
+          <thead>
+            <tr><th scope="col" data-i18n="regionCol">Region</th><th scope="col" data-i18n="pm25Col">PM2.5 1-hour</th><th scope="col" class="num-col" data-i18n="psiCol">PSI 24-hour</th></tr>
+          </thead>
+          <tbody id="regions"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="card stack" aria-labelledby="h-map" id="map">
+        <h2 id="h-map" data-i18n="mapHeading">By region · PM2.5 1-hour</h2>
+        <div id="map-figure" class="map-figure"></div>
+        <ul id="map-key" class="map-key" aria-label="Map key"></ul>
       </section>
 
       <section class="card stack grow" aria-labelledby="h-advice" id="advice">
@@ -58,25 +102,15 @@
         <div id="advice-body" class="advice-body" aria-live="polite"></div>
       </section>
     </div>
-
-    <section class="card stack map-card" aria-labelledby="h-map" id="map">
-      <h2 id="h-map" data-i18n="mapHeading">By region · PM2.5 1-hour</h2>
-      <div id="map-figure" class="map-figure"></div>
-      <ul id="map-key" class="map-key" aria-label="Map key"></ul>
-    </section>
   </div>
 
-  <section class="stack" aria-labelledby="h-regions">
-    <h2 id="h-regions" data-i18n="regionsHeading">Regions</h2>
-    <ul id="regions" class="regions"></ul>
-  </section>
-
-  <section class="card stack" aria-labelledby="h-fc" id="forecast">
-    <div>
+  <section class="card forecast" aria-labelledby="h-fc" id="forecast">
+    <div class="fc-head">
       <h2 id="h-fc" data-i18n="forecastHeading">PSI forecast · Next 24 h</h2>
       <p class="muted small" data-i18n="forecastSubtitle">App estimate from live NEA PM2.5, wind &amp; weather. Not an NEA forecast.</p>
     </div>
-    <div id="forecast-body" class="stack"></div>
+    <div id="forecast-visual" class="fc-visual stack"></div>
+    <div id="forecast-advice" class="fc-advice stack-sm"></div>
   </section>
 
   <section id="get-app" class="promo" aria-labelledby="h-app">

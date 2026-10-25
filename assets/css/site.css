@@ -125,7 +125,7 @@ a:hover { color: var(--primary-hover); }
 .skip:focus { top: 8px; }
 
 /* Header */
-.topbar { background: var(--surface); border-bottom: 1px solid var(--line); }
+.topbar { position: relative; z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); }
 .topbar-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); font-size: 1.2rem; font-weight: 700; }
 .brand img { display: block; border-radius: 10px; }
@@ -142,6 +142,41 @@ a:hover { color: var(--primary-hover); }
 .pill-primary { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
 .pill-primary:hover { color: var(--on-primary); background: var(--primary-hover); border-color: var(--primary-hover); }
 
+/* Phone settings menu (language + text size behind a gear); desktop keeps the pills in the header. */
+.icon-btn {
+  width: 48px; height: 48px; padding: 0; flex-shrink: 0;
+  display: none; align-items: center; justify-content: center;
+  border: 1px solid var(--outline); border-radius: 50%; background: var(--surface); color: var(--text); cursor: pointer;
+}
+.icon-btn svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn .icon-close { display: none; }
+.icon-btn[aria-expanded="true"] { background: var(--text); color: var(--surface); border-color: var(--text); }
+.icon-btn[aria-expanded="true"] .icon-gear { display: none; }
+.icon-btn[aria-expanded="true"] .icon-close { display: block; }
+.settings-panel {
+  position: absolute; left: 0; right: 0; top: 100%;
+  background: var(--surface); border-bottom: 1px solid var(--line); border-radius: 0 0 20px 20px;
+  padding-block: 1.1rem 1.3rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.settings-backdrop { position: fixed; inset: 0; z-index: -1; background: rgba(25, 28, 29, 0.4); }
+.settings-panel[hidden], .settings-backdrop[hidden] { display: none; }
+.seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 2px solid var(--primary); border-radius: 28px; padding: 4px; }
+.seg-opt {
+  min-height: 48px; border: 0; border-radius: 24px; background: transparent; color: var(--primary);
+  font: inherit; font-size: 1rem; font-weight: 700; cursor: pointer;
+}
+.seg-opt[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+.seg-large { font-size: 1.2rem; }
+
+@media (max-width: 700px) {
+  .topbar-inner { flex-wrap: nowrap; }
+  .settings { display: none; }
+  .icon-btn { display: inline-flex; }
+}
+@media (min-width: 701px) {
+  .settings-panel, .settings-backdrop { display: none !important; }
+}
+
 main { padding-block: 1.5rem 2.5rem; }
 main:focus { outline: none; }
 
@@ -156,9 +191,11 @@ main:focus { outline: none; }
 .banner .pill { margin-top: 0.25rem; align-self: flex-start; }
 
 /* Layout */
-.top { display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: stretch; }
-.top-left { flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 1.25rem; }
-.map-card { flex: 1 1 500px; min-width: 0; }
+.top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; align-items: stretch; }
+.col { min-width: 0; display: flex; flex-direction: column; gap: 1.25rem; }
+@media (min-width: 960px) {
+  .top { grid-template-columns: minmax(0, 440px) minmax(0, 1fr); }
+}
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem; }
 
 /* Tones */
@@ -200,7 +237,9 @@ main:focus { outline: none; }
 }
 
 /* Advice */
-.groups { display: flex; flex-direction: column; gap: 8px; }
+.groups { display: flex; flex-wrap: wrap; gap: 8px; }
+.groups .group { flex: 1 1 auto; }
+@media (max-width: 700px) { .groups { flex-direction: column; } }
 .group {
   min-height: 56px; padding: 8px 14px; display: flex; align-items: center; gap: 12px; text-align: left;
   border-radius: 14px; border: 2px solid var(--outline); background: var(--surface); color: var(--text);
@@ -255,20 +294,34 @@ main:focus { outline: none; }
 .map-key li { display: flex; align-items: center; gap: 8px; }
 .map-key svg { flex-shrink: 0; }
 
-/* Regions */
-.regions { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 0.9rem; }
-.region { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
-.region-towns { font-size: 0.85rem; color: var(--muted); }
-.region-value { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-.region-value .num { font-size: 2rem; font-weight: 700; line-height: 1.1; }
-.region-value .unit { font-size: 0.85rem; color: var(--muted); }
+/* Regions table */
+.regions { width: 100%; border-collapse: collapse; }
+.regions th { text-align: left; font-size: 0.8rem; font-weight: 600; color: var(--muted); padding: 0 0 0.4rem; }
+.regions td { border-top: 1px solid var(--line); padding: 0.65rem 0; vertical-align: middle; }
+.regions th + th, .regions td + td { padding-left: 0.75rem; }
+.regions .num-col { text-align: right; }
+.region-name { display: block; font-size: 1.05rem; font-weight: 700; }
+.region-towns { display: block; font-size: 0.8rem; color: var(--muted); }
+.region-pm { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+/* On desktop the card is as tall as the map column: spread the rows over it. */
+#regions-card .regions { flex-grow: 1; }
+.region-pm .num, .region-psi .num { font-size: 1.45rem; font-weight: 700; line-height: 1.1; }
+.region-psi { text-align: right; line-height: 1.2; }
+.region-psi .desc { display: block; font-size: 0.8rem; color: var(--muted); }
 .chip {
   align-self: flex-start; background: var(--t-bg); color: var(--t-fg); border: 1px solid var(--t-line);
-  border-radius: 10px; padding: 1px 10px; font-size: 0.85rem; font-weight: 700;
+  border-radius: 10px; padding: 1px 10px; font-size: 0.85rem; font-weight: 700; white-space: nowrap;
 }
 .tone-stale.chip { border-style: dashed; }
 
-/* Forecast */
+/* Forecast: text on the left under Islandwide, range and bar on the right (desktop); stacked on phones */
+.forecast { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "visual" "advice"; gap: 0.9rem; }
+.fc-head { grid-area: head; }
+.fc-visual { grid-area: visual; }
+.fc-advice { grid-area: advice; }
+@media (min-width: 960px) {
+  .forecast { grid-template-columns: minmax(0, 400px) minmax(0, 1fr); grid-template-areas: "head visual" "advice visual"; column-gap: 2.5rem; align-items: start; }
+}
 .forecast-range { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
 .forecast-range .num { font-size: 2.4rem; font-weight: 700; line-height: 1; }
 .psi-bar { position: relative; height: 22px; }
@@ -296,7 +349,6 @@ main:focus { outline: none; }
   .card { padding: 1rem; }
   /* Let the map use the card's padding so the West, Central and East callouts fit side by side. */
   .map-figure { width: auto; margin-inline: calc(-1rem + 4px); }
-  .regions { grid-template-columns: 1fr; }
 }
 
 /* Too narrow for four level labels under the bar: show them as a 2×2 key instead. */

@@ -195,6 +195,39 @@ function applyStatic(s) {
   badge.src = s.badgeSrc;
   badge.alt = s.badgeAlt;
   byId('map-key').setAttribute('aria-label', s.mapKey);
+  byId('settings-toggle').setAttribute('aria-label', settingsOpen() ? s.settingsClose : s.settingsHeading);
+  for (const button of document.querySelectorAll('[data-lang]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.lang === prefs.lang));
+  }
+  for (const button of document.querySelectorAll('[data-text]')) {
+    button.setAttribute('aria-pressed', String((button.dataset.text === 'large') === prefs.large));
+  }
+}
+
+// ---- Phone settings menu ------------------------------------------------------------
+
+const settingsOpen = () => byId('settings-toggle').getAttribute('aria-expanded') === 'true';
+
+function setSettingsOpen(open, { restoreFocus = true } = {}) {
+  const toggle = byId('settings-toggle');
+  toggle.setAttribute('aria-expanded', String(open));
+  byId('settings-panel').hidden = !open;
+  byId('settings-backdrop').hidden = !open;
+  toggle.setAttribute('aria-label', open ? STRINGS[prefs.lang].settingsClose : STRINGS[prefs.lang].settingsHeading);
+  if (open) byId('settings-panel').querySelector('[aria-pressed="true"]')?.focus();
+  else if (restoreFocus) toggle.focus();
+}
+
+function setLang(lang) {
+  prefs.lang = lang;
+  storage.set('lang', lang);
+  render();
+}
+
+function setLarge(large) {
+  prefs.large = large;
+  storage.set('text', large ? 'large' : 'standard');
+  render();
 }
 
 function renderStatus(s, view, now) {
@@ -302,7 +335,7 @@ function renderAdvice(s, view) {
   const lines = [el('p', { class: 'action', text: s.hour[hourActionKey(band, prefs.group).slice('hour.'.length)] })];
   if (showMaskLine(band, prefs.group)) lines.push(el('p', { text: s.mask }));
   if (showDoctorLine(band)) lines.push(el('p', { text: s.doctor }));
-  lines.push(el('p', { class: 'muted small', text: s.adviceSource }));
+  lines.push(el('p', { class: 'muted small', text: s.adviceSource + s.adviceGroupNote }));
   replaceIfChanged(body, lines);
 }
 
@@ -377,34 +410,41 @@ function renderMap(s, view) {
 }
 
 function renderRegions(s, view) {
-  const list = byId('regions');
-  list.replaceChildren();
+  const rows = byId('regions');
+  rows.replaceChildren();
   if (!view) return;
   for (const region of REGIONS) {
     const pm = view.pm25Regions[region];
     const psi = view.psiRegions[region];
-    const tone = pm25Tone(pm, view.late);
-    list.append(el('li', { class: 'region' }, [
-      el('h3', { text: s.region[region] }),
-      el('span', { class: 'region-towns', text: s.towns[region] }),
-      pm === null
-        ? el('span', { class: 'region-value', text: s.noReading })
-        : el('span', { class: 'region-value' }, [el('span', { class: 'num', text: fmt(pm) }), el('span', { class: 'unit', text: s.pm25Unit })]),
-      pm === null ? null : el('span', { class: `chip ${tone}`, text: s.band[pm25Band(pm)] }),
-      el('span', {}, [`${s.psiRow} `, el('strong', { text: psi === null ? '–' : fmt(psi) }), psi === null ? '' : ` · ${s.psi[psiBand(psi)]}`]),
+    rows.append(el('tr', {}, [
+      el('th', { scope: 'row' }, [
+        el('span', { class: 'region-name', text: s.region[region] }),
+        el('span', { class: 'region-towns', text: s.towns[region] }),
+      ]),
+      el('td', {}, pm === null
+        ? el('span', { text: s.noReading })
+        : el('span', { class: 'region-pm' }, [
+          el('span', { class: 'num', text: fmt(pm) }),
+          el('span', { class: `chip ${pm25Tone(pm, view.late)}`, text: s.bandRoman[pm25Band(pm)] }),
+        ])),
+      el('td', { class: 'region-psi' }, psi === null
+        ? el('span', { text: '–' })
+        : [el('span', { class: 'num', text: fmt(psi) }), el('span', { class: 'desc', text: s.psi[psiBand(psi)] })]),
     ]));
   }
 }
 
 function renderForecast(s, view) {
-  const body = byId('forecast-body');
-  body.replaceChildren();
+  const visual = byId('forecast-visual');
+  const advice = byId('forecast-advice');
+  visual.replaceChildren();
+  advice.replaceChildren();
   if (!view) return;
   const forecast = view.late || view.pm25 === null || view.psi === null
     ? null
     : projectPsiForecast({ pm25: view.pm25, psi: view.psi }, view.history, view.weather);
   if (!forecast) {
-    body.append(el('p', { class: 'action', text: s.forecastUnavailable }), el('p', { class: 'muted', text: s.forecastLateBody }));
+    visual.append(el('p', { class: 'action', text: s.forecastUnavailable }), el('p', { class: 'muted', text: s.forecastLateBody }));
     return;
   }
   const { lowPsi, highPsi, highEndCategory } = forecast;
@@ -413,7 +453,7 @@ function renderForecast(s, view) {
   const range = el('span', { class: 'range' });
   range.style.setProperty('left', `${(start * 100).toFixed(2)}%`);
   range.style.setProperty('width', `${((end - start) * 100).toFixed(2)}%`);
-  body.append(
+  visual.append(
     el('p', { class: 'forecast-range' }, [
       el('span', { class: 'num', text: `${lowPsi}–${highPsi}` }),
       el('span', { class: `chip tone-${LEVEL_TONES[level]}`, text: s.level[level] }),
@@ -427,6 +467,8 @@ function renderForecast(s, view) {
         el('strong', { text: s.level[l] }), s.levelRange[l],
       ]))),
     ]),
+  );
+  advice.append(
     el('p', { class: 'muted small', text: s.forecastFor(s.group[prefs.group]) }),
     el('p', { class: 'action', text: s.psiAdvice[psiAdviceKey(highEndCategory, prefs.group).slice('psiAdvice.'.length)] }),
     el('p', { class: 'muted small', text: s.forecastFootnote(highPsi) }),
@@ -475,16 +517,19 @@ function maybeRefresh() {
   if (document.visibilityState === 'visible' && Date.now() - state.lastAttempt >= REFRESH_EVERY_MS) refresh();
 }
 
-byId('lang-toggle').addEventListener('click', () => {
-  prefs.lang = prefs.lang === 'zh' ? 'en' : 'zh';
-  storage.set('lang', prefs.lang);
-  render();
-});
+byId('lang-toggle').addEventListener('click', () => setLang(prefs.lang === 'zh' ? 'en' : 'zh'));
+byId('text-toggle').addEventListener('click', () => setLarge(!prefs.large));
 
-byId('text-toggle').addEventListener('click', () => {
-  prefs.large = !prefs.large;
-  storage.set('text', prefs.large ? 'large' : 'standard');
-  render();
+byId('settings-toggle').addEventListener('click', () => setSettingsOpen(!settingsOpen()));
+byId('settings-backdrop').addEventListener('click', () => setSettingsOpen(false, { restoreFocus: false }));
+for (const button of document.querySelectorAll('[data-lang]')) {
+  button.addEventListener('click', () => setLang(button.dataset.lang));
+}
+for (const button of document.querySelectorAll('[data-text]')) {
+  button.addEventListener('click', () => setLarge(button.dataset.text === 'large'));
+}
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && settingsOpen()) setSettingsOpen(false);
 });
 
 document.addEventListener('visibilitychange', maybeRefresh);
