@@ -313,12 +313,9 @@ function hatchPattern(region, band) {
   ]);
 }
 
-// Callout geometry from the app's calculateBadgeOffset: centred on the region, kept 4px inside the map.
-const BADGE_HALF_WIDTH = 46;
-const BADGE_HALF_HEIGHT = 26;
+// Callout placement from the app's calculateBadgeOffset: centred on the region, kept 4px inside the map.
+// The callout size (--bw, --bh) scales with the map width in site.css.
 const BADGE_EDGE_MARGIN = 4;
-const BADGE_CLAMP_WIDTH = 90;
-const BADGE_MIN_HEIGHT = 52;
 
 function mapBadge(s, region, pm25, psi, tone) {
   const [x, y] = BADGE_POSITIONS[region];
@@ -332,8 +329,8 @@ function mapBadge(s, region, pm25, psi, tone) {
     el('span', { class: 'mb-psi', text: `PSI ${psi === null ? '--' : fmt(psi)}` }),
   ]);
   const m = BADGE_EDGE_MARGIN;
-  badge.style.setProperty('left', `clamp(${m}px, calc(${x * 100}% - ${BADGE_HALF_WIDTH}px), calc(100% - ${BADGE_CLAMP_WIDTH + m}px))`);
-  badge.style.setProperty('top', `clamp(${m}px, calc(${y * 100}% - ${BADGE_HALF_HEIGHT}px), calc(100% - ${BADGE_MIN_HEIGHT + m}px))`);
+  badge.style.setProperty('left', `clamp(${m}px, calc(${x * 100}% - var(--bw) / 2), calc(100% - var(--bw) - ${m}px))`);
+  badge.style.setProperty('top', `clamp(${m}px, calc(${y * 100}% - var(--bh) / 2), calc(100% - var(--bh) - ${m}px))`);
   return badge;
 }
 
