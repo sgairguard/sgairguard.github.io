@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src https://api-open.data.gov.sg https://api.data.gov.sg; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>SG AirGuard: live Singapore PSI and PM2.5</title>
+<meta name="description" content="Live Singapore haze levels: NEA 1-hour PM2.5 and 24-hour PSI islandwide and for North, South, East, West and Central, with NEA health advice and a 24-hour PSI estimate. English and 中文.">
+<link rel="canonical" href="https://sgairguard.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SG AirGuard: live Singapore PSI and PM2.5">
+<meta property="og:description" content="Live NEA PM2.5 and PSI for every region of Singapore, with health advice. Free Android app with haze alerts.">
+<meta property="og:url" content="https://sgairguard.github.io/">
+<meta name="theme-color" content="#FBFCFD" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/atkinson-hyperlegible-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+<script type="module" src="assets/js/app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="./">
+      <svg width="36" height="36" viewBox="0 0 36 36" aria-hidden="true"><rect width="36" height="36" rx="10" class="brand-tile"></rect><path d="M9 22c3-4 6-4 9 0s6 4 9 0M9 15c3-4 6-4 9 0s6 4 9 0" class="brand-wave"></path></svg>
+      <span lang="en">SG AirGuard</span>
+    </a>
+    <nav class="settings" aria-label="Page settings" data-i18n-aria="settingsNav">
+      <button type="button" class="pill" id="lang-toggle" lang="zh-Hans" aria-label="切换到中文">中文</button>
+      <button type="button" class="pill" id="text-toggle" aria-pressed="false" data-i18n="textLarger">Larger text</button>
+      <a class="pill pill-primary" href="#get-app" data-i18n="getApp">Get the app</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap stack-lg" tabindex="-1">
+  <div id="status" class="status" role="status" aria-live="polite"></div>
+
+  <section class="intro" aria-labelledby="h-title">
+    <h1 id="h-title" data-i18n="title">Singapore air quality, live</h1>
+    <p id="updated" class="muted" data-i18n="loading">Loading NEA readings…</p>
+  </section>
+
+  <div class="top">
+    <div class="top-left">
+      <section class="card stack" aria-labelledby="h-island" aria-busy="true" id="island">
+        <h2 id="h-island" data-i18n="islandwide">Islandwide</h2>
+        <div id="island-body" class="stack-sm"></div>
+      </section>
+
+      <section class="card stack grow" aria-labelledby="h-advice" id="advice">
+        <h2 id="h-advice" data-i18n="adviceHeading">What to do in the next hour</h2>
+        <p id="advice-for" class="label" data-i18n="adviceFor">Advice for</p>
+        <div id="groups" class="groups" role="group" aria-labelledby="advice-for"></div>
+        <div id="advice-body" class="advice-body" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <section class="card stack map-card" aria-labelledby="h-map" id="map">
+      <h2 id="h-map" data-i18n="mapHeading">By region · PM2.5 1-hour</h2>
+      <div id="map-figure" class="map-figure"></div>
+      <ul id="map-key" class="map-key" aria-label="Map key"></ul>
+    </section>
+  </div>
+
+  <section class="stack" aria-labelledby="h-regions">
+    <h2 id="h-regions" data-i18n="regionsHeading">Regions</h2>
+    <ul id="regions" class="regions"></ul>
+  </section>
+
+  <section class="card stack" aria-labelledby="h-fc" id="forecast">
+    <div>
+      <h2 id="h-fc" data-i18n="forecastHeading">PSI forecast · Next 24 h</h2>
+      <p class="muted small" data-i18n="forecastSubtitle">App estimate from live NEA PM2.5, wind &amp; weather. Not an NEA forecast.</p>
+    </div>
+    <div id="forecast-body" class="stack"></div>
+  </section>
+
+  <section id="get-app" class="promo" aria-labelledby="h-app">
+    <div class="promo-text">
+      <h2 id="h-app" data-i18n="appHeading">Get haze alerts on your Android phone</h2>
+      <p data-i18n="appBody">The free app warns you when PM2.5 reaches your alert level, with home-screen widgets and town weather.</p>
+    </div>
+    <a id="play-link" class="badge" href="https://play.google.com/store/apps/details?id=com.sgairguard">
+      <img id="play-badge" src="assets/img/google-play-badge-en.png" width="646" height="250" alt="Get it on Google Play">
+    </a>
+  </section>
+
+  <noscript>
+    <p class="card">This page needs JavaScript to load live readings from data.gov.sg. You can also check <a href="https://www.haze.gov.sg">haze.gov.sg</a>.</p>
+  </noscript>
+</main>
+
+<footer class="footer">
+  <div class="wrap stack-sm">
+    <p data-i18n="disclaimer">SG AirGuard is an independent app and is not affiliated with the National Environment Agency (NEA) or any Singapore government agency.</p>
+    <p data-i18n="dataSource">Data: data.gov.sg, Singapore Open Data Licence.</p>
+    <p data-i18n="trademark">Google Play and the Google Play logo are trademarks of Google LLC.</p>
+    <p class="links"><a href="privacy.html" data-i18n="privacy">Privacy policy</a><a href="mailto:sgairguard.app@gmail.com" data-i18n="contact">Contact</a></p>
+  </div>
+</footer>
+</body>
+</html>
