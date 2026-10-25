@@ -78,13 +78,11 @@
       </section>
 
       <section class="card stack grow" aria-labelledby="h-regions" id="regions-card">
-        <h2 id="h-regions" data-i18n="regionsHeading">Regions</h2>
-        <table class="regions">
-          <thead>
-            <tr><th scope="col" data-i18n="regionCol">Region</th><th scope="col">PM2.5<span class="desktop-only" data-i18n="hour1Suffix"> 1-hour</span></th><th scope="col" class="num-col">PSI<span class="desktop-only" data-i18n="hour24Suffix"> 24-hour</span></th></tr>
-          </thead>
-          <tbody id="regions"></tbody>
-        </table>
+        <div>
+          <h2 id="h-regions" data-i18n="regionsHeading">Regions</h2>
+          <p class="muted small" data-i18n="regionsSub">PM2.5 (1-hour) and PSI (24-hour)</p>
+        </div>
+        <ul id="regions" class="regions"></ul>
       </section>
     </div>
 

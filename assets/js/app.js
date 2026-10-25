@@ -420,20 +420,25 @@ function renderRegions(s, view) {
   for (const region of REGIONS) {
     const pm = view.pm25Regions[region];
     const psi = view.psiRegions[region];
-    rows.append(el('tr', {}, [
-      el('th', { scope: 'row' }, [
-        el('span', { class: 'region-name', text: s.region[region] }),
-        el('span', { class: 'region-towns', text: s.towns[region] }),
+    // Option C: name, PM2.5 (band colour) and PSI on one line, the overview bar underneath.
+    rows.append(el('li', { class: `region-row ${pm25Tone(pm, view.late)}` }, [
+      el('div', { class: 'region-line' }, [
+        el('span', { class: 'region-pm' }, [
+          el('span', { class: 'region-name', text: s.region[region] }),
+          pm === null
+            ? el('span', { class: 'muted', text: s.noReading })
+            : el('span', {}, [
+              el('span', { class: 'num', text: fmt(pm) }),
+              el('span', { class: 'sr-only', text: ` PM2.5 · ${s.band[pm25Band(pm)]}` }),
+            ]),
+        ]),
+        el('span', { class: 'region-psi' }, [
+          'PSI ',
+          el('strong', { text: psi === null ? '–' : fmt(psi) }),
+          psi === null ? null : el('span', { class: `chip ${psiTone(psi, view.late)}`, text: s.psi[psiBand(psi)] }),
+        ]),
       ]),
-      el('td', {}, pm === null
-        ? el('span', { text: s.noReading })
-        : el('span', { class: 'region-pm' }, [
-          el('span', { class: 'num', text: fmt(pm) }),
-          el('span', { class: `chip ${pm25Tone(pm, view.late)}`, text: s.bandRoman[pm25Band(pm)] }),
-        ])),
-      el('td', { class: 'region-psi' }, psi === null
-        ? el('span', { text: '–' })
-        : [el('span', { class: 'num', text: fmt(psi) }), el('span', { class: 'desc', text: s.psi[psiBand(psi)] })]),
+      pm === null ? null : pm25Bar(pm),
     ]));
   }
 }
