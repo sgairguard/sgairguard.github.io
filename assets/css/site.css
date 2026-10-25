@@ -386,3 +386,18 @@ main:focus { outline: none; }
 @media (forced-colors: active) {
   .pm25-bar .segments span, .psi-bar .segments span { forced-color-adjust: none; }
 }
+
+/* Phones: compact top so more readings fit on the first screen. Last in the file so it wins over the base rules. */
+@media (max-width: 700px) {
+  .topbar-inner { padding-block: 6px; }
+  .brand { gap: 10px; font-size: 1.05rem; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; }
+  .icon-btn { width: 44px; height: 44px; }
+  .icon-btn svg { width: 22px; height: 22px; }
+  main { padding-block: 0.9rem 2rem; }
+  .stack-lg { gap: 1.1rem; }
+  h1 { font-size: 1.3rem; }
+  h2 { font-size: 1.15rem; }
+  #island { gap: 0.55rem; }
+  .card { gap: 0.7rem; }
+}
